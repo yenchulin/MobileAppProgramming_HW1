@@ -19,8 +19,22 @@
  Then, let's create a book store first:
  
  */
+let books: [[String: String]] = [
+    ["author": "Dan Brown", "title": "Digital Fortress", "price": "9.99"],
+    ["author": "Dan Brown", "title": "Angels & Demons", "price": "17.00"],
+    ["author": "Dan Brown", "title": "The Da Vinci Code", "price": "9.99"],
+    ["author": "Dan Brown", "title": "Deception Point", "price": "17.00"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Goblet of Fire", "price": "12.99"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Half-Blood Prince", "price": "12.99"],
+    ["author": "J.K. Rowling", "title": "Harry Potter and the Deathly Hallows", "price": "14.99"],
+    ["author": "詹宏志", "title": "旅行與讀書", "price": "12.00"],
+    ["author": "王宣一", "title": "國宴與家宴", "price": "7.99"]
+]
 
-var bookStore = BookStore()
+
+
+
+var bookStore = BookStore.from(books)
 
 /*:
  
@@ -39,15 +53,55 @@ var bookStore = BookStore()
 // Use this
 //func distinctAuthors() -> Set<String> { ... }
 // or this
-//func distinctAuthors() -> [String] { ... }
+func distinctAuthors() -> [String] {
+    var distinctAuthors = [String]()
+    
+    for book in books {
+        guard let bookAuthor = book["author"] else {
+            return [""]
+        }
+        if !distinctAuthors.contains(bookAuthor) {
+            distinctAuthors.append(bookAuthor)
+        }
+    }
+    return distinctAuthors
+}
+
 // then
-//bookStore.setDataSource(authorsGetter: distinctAuthors)
+bookStore.setDataSource(authorsGetter: distinctAuthors)
 
-//func totalBookPrice() -> Double { ... }
-//bookStore.setDataSource(priceCalculator: totalBookPrice)
 
-//func getBook(at index: Int) -> (title: String, author: String, price: Double)? { return nil }
-//bookStore.setDataSource(bookGetter: getBook(at:))
+
+func totalBookPrice() -> Double {
+    var sum: Double = 0
+    
+    for book in books {
+        guard let bookPrice = Double(book["price"]!) else {
+            return 0
+        }
+        sum = sum + bookPrice
+    }
+    return sum
+}
+
+// then
+bookStore.setDataSource(priceCalculator: totalBookPrice)
+
+
+
+func getBook(at index: Int) -> (title: String, author: String, price: Double)? {
+    
+    if index < books.count && index >= 0 {
+        let book = books[index]
+        let bookInfo = Book(title: book["title"]!, author: book["author"]!, price: Double(book["price"]!)!)
+        return bookInfo
+        
+    } else {
+        return nil
+    }
+}
+
+bookStore.setDataSource(bookGetter: getBook(at:))
 
 /*:
 
